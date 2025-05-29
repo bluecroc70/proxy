@@ -1,24 +1,29 @@
 const { createServer } = require('@ultraviolet/server');
 
 const server = createServer({
-  // This config object controls proxy behavior
   handler: async (req, res) => {
-    // By default, it proxies everything to the target host.
-    // We want to proxy requests for Chatango.
-    
-    // Extract URL path from req.url
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    // Check if request is for Chatango
-    if (url.pathname.startsWith('/chatango/')) {
-      // Strip /chatango/ prefix, then forward to Chatango
-      const targetUrl = 'https://chatango.com' + url.pathname.replace('/chatango', '') + url.search;
+    // Proxy requests starting with /tawkto/ to https://tawk.to
+    if (url.pathname.startsWith('/tawkto/')) {
+      // Set CORS headers to allow your frontend to fetch
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-      // You can use Ultraviolet's proxy helper:
+      if (req.method === 'OPTIONS') {
+        res.statusCode = 204;
+        return res.end();
+      }
+
+      // Build target URL for tawk.to by stripping /tawkto prefix
+      const targetUrl = 'https://tawk.to' + url.pathname.replace('/tawkto', '') + url.search;
+
+      // Proxy request to tawk.to
       return server.proxy(req, res, targetUrl);
     }
 
-    // For other requests, just respond with 404
+    // If not matched, 404
     res.statusCode = 404;
     res.end('Not Found');
   },
