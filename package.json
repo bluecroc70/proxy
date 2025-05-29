@@ -1,12 +1,9 @@
 {
-  "name": "chatango-ultraviolet-proxy",
+  "name": "chatango-proxy",
   "version": "1.0.0",
-  "description": "Ultraviolet proxy backend for Chatango",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
+  "scripts": { "start": "node server.js" },
   "dependencies": {
-    "@ultraviolet/server": "^1.0.0"
+    "http-proxy": "^1.18.1"
   }
 }
