@@ -1,7 +1,7 @@
 const http = require('http');
 const httpProxy = require('http-proxy');
 
-const proxy = httpProxy.createProxyServer({});
+const proxy = httpProxy.createProxyServer({ ws: true });
 
 const server = http.createServer(function(req, res) {
   if (req.url.startsWith('/stchatango/')) {
@@ -14,6 +14,15 @@ const server = http.createServer(function(req, res) {
   } else {
     res.writeHead(404);
     res.end('Not found');
+  }
+});
+
+server.on('upgrade', (req, socket, head) => {
+  if (req.url.startsWith('/stchatango/')) {
+    req.url = req.url.replace('/stchatango', '');
+    proxy.ws(req, socket, head, { target: 'wss://st.chatango.com' });
+  } else {
+    socket.destroy();
   }
 });
 
